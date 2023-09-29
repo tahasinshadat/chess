@@ -1,0 +1,96 @@
+:root {
+    --tileSize: 100px;
+    --borderSize: 5px;
+}
+
+#board {
+    display: grid;
+    grid-template-columns: repeat(8, var(--tileSize));
+    grid-template-rows: repeat(8, var(--tileSize));
+    gap: 0;
+    border: 5px solid black;
+    width: calc((8 * var(--tileSize)) + (2 * var(--borderSize))); 
+    height: calc((8 * var(--tileSize)) + (2 * var(--borderSize))); 
+    margin: 0 20px;
+}
+
+.Tile {
+    height: var(--tileSize);
+    width: var(--tileSize);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: calc(var(--tileSize) / 1.5);
+    position: relative;
+}
+
+.black {
+    background:	#7F461B;
+}
+
+.white {
+    background: white;
+}
+
+.canMove {
+    background: rgba(255, 0, 0, 0.4);
+    position: absolute; /* Position the overlay relative to the parent */
+    top: 0;
+    left: 0;
+    width: 100%; /* Make it cover the entire parent */
+    height: 100%; /* Make it cover the entire parent */
+    z-index: 1; /* Ensure the overlay is on top of the background */
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+}
+
+.promotion-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 2px solid #333;
+    padding: 20px;
+    text-align: center;
+    z-index: 1000; /* Ensure the popup is on top of everything */
+}
+
+.promotion-popup button {
+    display: block;
+    margin: 10px auto;
+    padding: 5px 10px;
+    border: 1px solid #333;
+    cursor: pointer;
+    background-color: #f0f0f0;
+}
+
+.promotion-popup button:hover {
+    background-color: #ccc;
+}
+
+.piece-icon {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.header {
+    font-size: 4rem !important;
+}
+
+.d-flex {
+    display: flex;
+    justify-content: center;
+}
+
+#captured-blacks,
+#captured-whites {
+    width: calc(15% - var(--borderSize));
+    padding: 20px;
+    background-color: #333; 
+    margin: 5px; 
+    font-size: calc(var(--tileSize) / 1.5);
+    position: relative;
+    top: 0px;
+}
