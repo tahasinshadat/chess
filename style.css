@@ -39,7 +39,7 @@
     left: 0;
     width: 100%; /* Make it cover the entire parent */
     height: 100%; /* Make it cover the entire parent */
-    z-index: 1; /* Ensure the overlay is on top of the background */
+    z-index: 10; /* Ensure the overlay is on top of the background */
     display: flex;
     align-items: center; 
     justify-content: center; 
@@ -93,4 +93,76 @@
     font-size: calc(var(--tileSize) / 1.5);
     position: relative;
     top: 0px;
+}
+
+
+/* Responsiveness */
+@media screen and (max-width: 1500px) {
+    :root {
+        --tileSize: 80px;
+    }
+
+    .header {
+        font-size: 3rem !important; 
+    }
+
+    #captured-blacks,
+    #captured-whites {
+        width: calc(20% - var(--borderSize));
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .d-flex {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .RESPONSIVE-CAPTURES {
+        display: flex;
+        justify-content: space-around;
+        min-width: calc((8 * var(--tileSize)) + (2 * var(--borderSize)));;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    :root {
+        --tileSize: 75px; 
+    }
+
+    .header {
+        font-size: 2.5rem !important; /* Reduce header font size */
+    }
+}
+
+@media screen and (max-width: 650px) {
+    :root {
+        --tileSize: 70px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    :root {
+        --tileSize: 65px; 
+    }
+}
+
+@media screen and (max-width: 550px) {
+    :root {
+        --tileSize: 60px; 
+    }
+}
+
+@media screen and (max-width: 500px) {
+    :root {
+        --tileSize: 55px; 
+    }
+}
+
+@media screen and (max-width: 460px) {
+    :root {
+        --tileSize: 45px; /* Reduce tile size for medium-sized screens */
+    }
 }

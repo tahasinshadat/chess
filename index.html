@@ -7,7 +7,7 @@
 
     <!-- My CSS + Script -->
     <link rel="stylesheet"  href="style.css">
-    <script defer src="script.js" type="module"></script>
+    <script defer src="chess.js"></script>
 
     <!-- Bootstrap Framework -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -25,11 +25,11 @@
 
     <h1 class="text-center text-white header">Chess</h1>
     <div class="d-flex text-center">
-        <div id="captured-whites">
+        <div id="captured-whites" class="RESPONSIVE-CAPTURES">
             <h4 class="text-white">Whites Captured Pieces</h4>
         </div>
         <div id="board"></div>
-        <div id="captured-blacks">
+        <div id="captured-blacks" class="RESPONSIVE-CAPTURES">
             <h4 class="text-white">Blacks Captured Pieces</h4>
         </div>
     </div>

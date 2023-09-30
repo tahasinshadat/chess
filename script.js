@@ -40,35 +40,16 @@ class Board {
     }
 
     resetBoard() {
-        for (let row = 0; row < this.board.length; row++) {
-            for (let col = 0; col < this.board.length; col++) {
-
-                if (this.board[row][col] != '') {
-                    this.board[row][col] = '';
-                }
-
-                // Black pieces
-                if (row == 1) this.board[row][col] = 'pawn-b';
-                if (row == 0) {
-                    if (col == 0 || col == 7) this.board[row][col] = 'rook-b';
-                    if (col == 1 || col == 6) this.board[row][col] = 'knight-b';
-                    if (col == 2 || col == 5) this.board[row][col] = 'bishop-b';
-                    if (col == 3) this.board[row][col] = 'queen-b';
-                    if (col == 4) this.board[row][col] = 'king-b';
-                }
-
-                // White pieces
-                if (row == 6) this.board[row][col] = 'pawn-w';
-                if (row == 7) {
-                    if (col == 0 || col == 7) this.board[row][col] = 'rook-w';
-                    if (col == 1 || col == 6) this.board[row][col] = 'knight-w';
-                    if (col == 2 || col == 5) this.board[row][col] = 'bishop-w';
-                    if (col == 3) this.board[row][col] = 'queen-w';
-                    if (col == 4) this.board[row][col] = 'king-w';
-                }
-
-            }
-        }
+        this.board = [
+            ['rook-b', 'knight-b', 'bishop-b', 'queen-b', 'king-b', 'bishop-b', 'knight-b', 'rook-b'],
+            ['pawn-b', 'pawn-b', 'pawn-b', 'pawn-b', 'pawn-b', 'pawn-b', 'pawn-b', 'pawn-b'],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['pawn-w', 'pawn-w', 'pawn-w', 'pawn-w', 'pawn-w', 'pawn-w', 'pawn-w', 'pawn-w'],
+            ['rook-w', 'knight-w', 'bishop-w', 'queen-w', 'king-w', 'bishop-w', 'knight-w', 'rook-w']
+        ];
     }
 
     renderPieces() {
