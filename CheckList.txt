@@ -23,12 +23,12 @@ CheckList:
 [  ] - Be able to perform a castle
 [ X ] - Setup the turn based system
 [  ] - Check for & prevent illegal moves from being done
-    -> [  ] - Stop King from going into the diagnols of Pawns (an area where they will be in check)
-    -> [  ] - Stop King from going into an area where they will be in check from a Rook
-    -> [  ] - Stop King from going into an area where they will be in check from a Bishop
-    -> [  ] - Stop King from going into an area where they will be in check from a Queen
-    -> [  ] - Stop King from going into an area where they will be in check from a Knight
-    -> [  ] - Stop King from being able to go near the opposing kings movement spaces
+    -> [ X ] - Stop King from going into the diagnols of Pawns (an area where they will be in check)
+    -> [ X ] - Stop King from going into an area where they will be in check from a Rook
+    -> [ X ] - Stop King from going into an area where they will be in check from a Bishop
+    -> [ X ] - Stop King from going into an area where they will be in check from a Queen
+    -> [ X ] - Stop King from going into an area where they will be in check from a Knight
+    -> [ X ] - Stop King from being able to go near the opposing kings movement spaces
     -> [  ] - When in check, only display possible movements to get out of check
         -> [  ] - Possible interceptions when king is in check (other piece goes in front of attacking pieces path)
         -> [  ] - Spaces king can go to that are safe
@@ -42,6 +42,7 @@ CheckList:
     -> [  ] - Only kings left on the board
 [  ] - Check for a CheckMate (Win)
     -> [  ] - King has no safe spaces to go to and his current space is unsafe / in check
+    -> [  ] - Someone runs out of time (they lose)
 [  ] - Display end screen
 
 

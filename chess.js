@@ -50,6 +50,8 @@ class Board {
             ['pawn-w', 'pawn-w', 'pawn-w', 'pawn-w', 'pawn-w', 'pawn-w', 'pawn-w', 'pawn-w'],
             ['rook-w', 'knight-w', 'bishop-w', 'queen-w', 'king-w', 'bishop-w', 'knight-w', 'rook-w']
         ];
+        whiteCapturedPieces = [];
+        blackCapturedPieces = [];
     }
 
     renderPieces() {
@@ -104,6 +106,11 @@ class Board {
 
     }
 
+    Update() {
+        this.updateBoard();
+        this.updateMiscellaneous();
+    }
+
     deletePieces() {
         // Delete all the event listeners from the previous pieces
         this.pieces.forEach((piece) => {
@@ -121,8 +128,131 @@ class Board {
         }
     }
 
+    // Check is a given position would put the king in check
     isCheck(row, col) {
+        for (const piece of this.pieces) {
+            if (whitesTurn && piece.color === 'black') { // Iterate through only the black pieces on whites turn
 
+                if (piece.type === 'king') { // Checks if the position is in the range of the other king
+
+                    let coords = this.findPiece('king-b');
+                    let enemyKingsRange = [
+                        { row: coords.row - 1, col: coords.col }, // Up
+                        { row: coords.row, col: coords.col + 1 }, // Right
+                        { row: coords.row, col: coords.col - 1 }, // Left
+                        { row: coords.row + 1, col: coords.col }, // Down
+                        { row: coords.row - 1, col: coords.col + 1 }, // Top Right
+                        { row: coords.row + 1, col: coords.col + 1 }, // Bottom Right
+                        { row: coords.row + 1, col: coords.col - 1 }, // Bottom Left
+                        { row: coords.row - 1, col: coords.col - 1 } // Top Left
+                    ];
+
+                    for (const position of enemyKingsRange) {
+                        if (position.row === row && position.col === col) {
+                            return true;
+                        }
+                    }
+
+                } else { // the other pieces
+
+                    const moves = piece.getMoves();
+                    for (const position of moves) {
+    
+                        if (piece.type === 'pawn') {
+                            // Check for pawn attacks (diagonal)
+                            const pawnAttackLeft = position.currentPos[0] + 1 === row && position.currentPos[1] - 1 === col;
+                            const pawnAttackRight = position.currentPos[0] + 1 === row && position.currentPos[1] + 1 === col;
+    
+                            if (pawnAttackLeft || pawnAttackRight) {
+                                return true; // the king will be in check
+                            }
+    
+                            // Pawn moves one square forward
+                            if (position.currentPos[0] + 1 == row && position.currentPos[1] == col) {
+                                continue; // not a check
+                            }
+    
+                            // Pawn is on initial square (Can move up 2)
+                            if (position.currentPos[0] == 1 && row == 3 && position.currentPos[1] === col) {
+                                continue;
+                            } 
+                        }
+    
+                        if (position.canMoveRow === row && position.canMoveCol === col) { // If the position is in the possible attack of another piece
+                            return true; // That position would put the king in check
+                        }
+    
+                    }
+
+                }
+
+            } else if (!whitesTurn && piece.color === 'white') { // Iterate through only the white pieces on blacks turn
+
+                if (piece.type === 'king') { // Checks if the position is in the range of the other king
+
+                    let coords = this.findPiece('king-w');
+                    let enemyKingsRange = [
+                        { row: coords.row - 1, col: coords.col }, // Up
+                        { row: coords.row, col: coords.col + 1 }, // Right
+                        { row: coords.row, col: coords.col - 1 }, // Left
+                        { row: coords.row + 1, col: coords.col }, // Down
+                        { row: coords.row - 1, col: coords.col + 1 }, // Top Right
+                        { row: coords.row + 1, col: coords.col + 1 }, // Bottom Right
+                        { row: coords.row + 1, col: coords.col - 1 }, // Bottom Left
+                        { row: coords.row - 1, col: coords.col - 1 } // Top Left
+                    ];
+
+                    for (const position of enemyKingsRange) {
+                        if (position.row === row && position.col === col) {
+                            return true;
+                        }
+                    }
+
+                } else { // the other pieces
+
+                    const moves = piece.getMoves();
+                    for (const position of moves) {
+    
+                        if (piece.type == 'pawn') {
+                            // Check for pawn attacks (diagonal)
+                            const pawnAttackLeft = position.currentPos[0] - 1 == row && position.currentPos[1] - 1 == col;
+                            const pawnAttackRight = position.currentPos[0] - 1 == row && position.currentPos[1] + 1 == col;
+    
+                            if (pawnAttackLeft || pawnAttackRight) {
+                                return true; // the king will be in check
+                            }
+    
+                            // Pawn moves one square forward
+                            if (position.currentPos[0] + 1 == row && position.currentPos[1] == col) {
+                                continue; // not a check
+                            }
+    
+                            // Pawn is on initial square (Can move up 2)
+                            if (position.currentPos[0] == 1 && row == 3 && position.currentPos[1] === col) {
+                                continue;
+                            } 
+                        }
+    
+                        if (position.canMoveRow === row && position.canMoveCol === col) { // If the position is in the possible attack of another piece
+                            return true; // That position would put the king in check
+                        }
+                    }
+
+                }
+                
+            }
+        }
+        return false;
+    }
+
+    findPiece(piece) {
+        for (let row = 0; row < this.board.length; row++) {
+            for (let col = 0; col < this.board[row].length; col++) {
+                if (this.board[row][col] === piece) {
+                    return { row: row, col: col };
+                }
+            }
+        }
     }
 
 }
@@ -170,7 +300,7 @@ class Piece {
 
     // Makes it possible for user to move / interact with the board
     setClickEvent() {
-        let possibleMoves = this.piece.getMoves(GameBoard.board);
+        let possibleMoves = this.getMoves();
         this.clickHandler = () => {
             clearPossibleMoves();
             if (this.type === 'pawn') { // Pawns have a special case
@@ -213,7 +343,7 @@ class Piece {
     movePiece(canMoveRow, canMoveCol, enPassant, EPCoords) {
         movedUp2 = false;
         enPassantCoords = [];
-        let  board = GameBoard.board;
+        let board = GameBoard.board;
 
         if (this.type === 'pawn') {
 
@@ -221,14 +351,14 @@ class Piece {
                 showPromotionPopup((promotionChoice) => {
                     this.type = `${promotionChoice}-w`;
                     board[canMoveRow][canMoveCol] = `${promotionChoice}-w`;
-                    GameBoard.updateBoard();
+                    GameBoard.Update();
                 });
             }
             if (canMoveRow === 7) { // Promotion (FOR BLACK PAWN)
                 showPromotionPopup((promotionChoice) => {
                     this.type = `${promotionChoice}-b`;
                     board[canMoveRow][canMoveCol] = `${promotionChoice}-b`;
-                    GameBoard.updateBoard();
+                    GameBoard.Update();
                 });
             }
 
@@ -255,24 +385,29 @@ class Piece {
             canMoveElement.innerText = '';
         }
 
-        if (board[canMoveRow][canMoveCol] != '' && isBlack(board[canMoveRow][canMoveCol])) {
+        if (board[canMoveRow][canMoveCol] != '' && isBlack(board[canMoveRow][canMoveCol], false)) {
             whiteCapturedPieces.push(board[canMoveRow][canMoveCol]);
         }
-        if (board[canMoveRow][canMoveCol] != '' && !isBlack(board[canMoveRow][canMoveCol])) {
+        if (board[canMoveRow][canMoveCol] != '' && !isBlack(board[canMoveRow][canMoveCol], false)) {
             blackCapturedPieces.push(board[canMoveRow][canMoveCol]);
         }
 
+        // Capturing
         let piece = board[this.row][this.col] // Take piece
         board[canMoveRow][canMoveCol] = piece; // Move it to its new position
         board[this.row][this.col] = ''; // Delete the piece from it's old position
         whitesTurn = !whitesTurn;
         clearPossibleMoves();
-        GameBoard.updateBoard();
+        GameBoard.Update();
     }
 
     // Deletes click events
     delete() {
         if (this.clickHandler) this.tile.removeEventListener('click', this.clickHandler);
+    }
+
+    getMoves() {
+        return this.piece.getMoves(GameBoard.board);
     }
 }
 
@@ -283,8 +418,15 @@ class King {
         this.color = color;
 
         // Will help me change the logic for the based off color
-        if (this.color === "white") this.reverse = false;
-        else this.reverse = true;
+        if (this.color === "white") {
+            this.reverse = false;
+            this.direction = 1;
+            this.enemyPawn = 'pawn-b'; // For an edgecase
+        } else {
+            this.reverse = true;
+            this.direction = -1;
+            this.enemyPawn = 'pawn-w'; // For an edgecase
+        }
 
         this.row = row;
         this.col = col;
@@ -292,24 +434,36 @@ class King {
     }
 
     getMoves(board) {
-        const kingMoves = [
+        let kingMoves = [];
+        // An EdgeCase, if there is an enemy pawn in front of us, we cant move to the left and the right or elese we will be in check
+        if (board[this.row - this.direction][this.col] === this.enemyPawn) kingMoves = [
             { row: this.row - 1, col: this.col }, // Up
+            // { row: this.row, col: this.col + 1 }, -> Right
+            // { row: this.row, col: this.col - 1 }, -> Left
             { row: this.row + 1, col: this.col }, // Down
-            { row: this.row, col: this.col - 1 }, // Left
-            { row: this.row, col: this.col + 1 }, // Right
             { row: this.row - 1, col: this.col + 1 }, // Top Right
-            { row: this.row - 1, col: this.col - 1 }, // Top Left
             { row: this.row + 1, col: this.col + 1 }, // Bottom Right
-            { row: this.row + 1, col: this.col - 1 } // Bottom Left
+            { row: this.row + 1, col: this.col - 1 }, // Bottom Left
+            { row: this.row - 1, col: this.col - 1 } // Top Left
+        ];
+        else kingMoves = [
+            { row: this.row - 1, col: this.col }, // Up
+            { row: this.row, col: this.col + 1 }, // Right
+            { row: this.row, col: this.col - 1 }, // Left
+            { row: this.row + 1, col: this.col }, // Down
+            { row: this.row - 1, col: this.col + 1 }, // Top Right
+            { row: this.row + 1, col: this.col + 1 }, // Bottom Right
+            { row: this.row + 1, col: this.col - 1 }, // Bottom Left
+            { row: this.row - 1, col: this.col - 1 } // Top Left
         ];
 
         for (const move of kingMoves) {
-            // Check if the destination tile is within the range of the board
-            if (move.row >= 0 && move.row < 8 && move.col >= 0 && move.col < 8) {
-                // Check if the destination tile is empty or contains an enemy piece
-                if (board[move.row][move.col] === '' || isBlack(board[move.row][move.col], this.reverse)) {
+            if (move.row >= 0 && move.row < 8 && move.col >= 0 && move.col < 8) { // Check if the destination tile is within the range of the board
+
+                if ( ( board[move.row][move.col] === '' || isBlack(board[move.row][move.col], this.reverse) ) && !GameBoard.isCheck(move.row, move.col)) { // If the tile is empty or has an enemy piece and if the tile does NOT put us in check
                     this.setMove(move.row, move.col);
                 }
+
             }
         }
 
@@ -628,7 +782,7 @@ class Pawn {
                 enPassantCoords[1] === this.col + 1 &&
                 board[enPassantCoords[0]][enPassantCoords[1]] === this.enemy
             ) {
-                this.setMove(this.row - (1 * this.direction), this.col + 1, true, enPassantCoords);
+                this.setMove(this.row - this.direction, this.col + 1, true, enPassantCoords);
             }
 
             // if there is an EnPassant avilable on the left
@@ -636,39 +790,26 @@ class Pawn {
                 enPassantCoords[1] === this.col - 1 &&
                 board[enPassantCoords[0]][enPassantCoords[1]] === this.enemy
             ) {
-                this.setMove(this.row - (1 * this.direction), this.col - 1, true, enPassantCoords);
+                this.setMove(this.row - this.direction, this.col - 1, true, enPassantCoords);
             }
 
         }
 
-        // If there is ANYTHING in front of me, I cant move forward
-        if (board[this.row - (1 * this.direction)][this.col] != '') {
+        // If im in row 6, and theres nothing in front of my movement spaces
+        if (this.row === this.initialRow && board[this.row - this.direction][this.col] === '' && board[this.row - (2 * this.direction)][this.col] === '') {
+            this.setMove(this.row - this.direction, this.col); // up 1
+            this.setMove(this.row - (2 * this.direction), this.col); // up 2
 
-            // but if there are enemies to my diagnols
-            if (board[this.row - (1 * this.direction)][this.col - 1] && isBlack(board[this.row - (1 * this.direction)][this.col - 1], this.reverse)) { // left diagnol
-                this.setMove(this.row - (1 * this.direction), this.col - 1);
-            }
+        } else if (board[this.row - this.direction][this.col] === '') { // if there is nothing in front of me
+            this.setMove(this.row - this.direction, this.col); // up 1 
+        }
 
-            if (board[this.row - (1 * this.direction)][this.col + 1] && isBlack(board[this.row - (1 * this.direction)][this.col + 1], this.reverse)) { // right diagnol
-                this.setMove(this.row - (1 * this.direction), this.col + 1);
-            }
+        if (board[this.row - this.direction][this.col - 1] && isBlack(board[this.row - this.direction][this.col - 1], this.reverse)) { // left diagnol
+            this.setMove(this.row - this.direction, this.col - 1);
+        }
 
-        } else {
-            // If im in row 6, and theres nothing in front of my movement spaces
-            if (this.row === this.initialRow && board[this.row - (1 * this.direction)][this.col] === '' && board[this.row - (2 * this.direction)][this.col] === '') {
-                this.setMove(this.row - (1 * this.direction), this.col); // up 1
-                this.setMove(this.row - (2 * this.direction), this.col); // up 2
-            } else {
-                this.setMove(this.row - (1 * this.direction), this.col); // up 1
-            }
-
-            if (board[this.row - (1 * this.direction)][this.col - 1] && isBlack(board[this.row - (1 * this.direction)][this.col - 1], this.reverse)) { // left diagnol
-                this.setMove(this.row - (1 * this.direction), this.col - 1);
-            }
-
-            if (board[this.row - (1 * this.direction)][this.col + 1] && isBlack(board[this.row - (1 * this.direction)][this.col + 1], this.reverse)) { // right diagnol
-                this.setMove(this.row - (1 * this.direction), this.col + 1);
-            }
+        if (board[this.row - this.direction][this.col + 1] && isBlack(board[this.row - this.direction][this.col + 1], this.reverse)) { // right diagnol
+            this.setMove(this.row - this.direction, this.col + 1);
         }
 
         return this.possibleMoves;
@@ -683,7 +824,7 @@ class Pawn {
                 enPassant: enPassant,
                 EPCoords: EPCoords
             }
-        );   
+        );
     }
 
 }
@@ -751,6 +892,11 @@ function startGame() {
     GameBoard.resetBoard();
     // console.log(GameBoard.board);
     GameBoard.updateBoard();
+}
+
+function restartGame() {
+    GameBoard.resetBoard();
+
 }
 
 startGame();
