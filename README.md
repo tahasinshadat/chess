@@ -1,0 +1,139 @@
+
+
+Tahasin Shadat - Chess App  » Project Decomposition « 
+
+
+⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎
+⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎
+⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎
+
+
+Key:
+X -> Completed
+O -> Dependant on Maker / Player Skill Level, Won't Implement
+
+
+⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎
+⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎
+⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎
+
+
+CheckList:
+[ X ] - Create Board
+[ X ] - Show Pieces on Board
+[ X ] - Be able to move Pawn
+[ X ] - Be able to move and capture with Pawn
+[ X ] - Be able to move and capture with Knight
+[ X ] - Be able to move and capture with Rook
+[ X ] - Be able to move and capture with Bishop
+[ X ] - Be able to move and capture with Queen
+[ X ] - Be able to move and capture with King
+[  ] - Be able to perform all special moves
+    [ X ] - Be able to perform a Promotion to Queen, Knight, Rook, or Bishop when Pawn gets to other side
+    [ X ] - Be able to perform an En Passant
+        ↪ Rules:
+            -> [ X ] - Enemy Pawn has to be on it's initial square
+            -> [ X ] - Enemy Pawn has to move forward 2 spaces and land next to your Pawn
+            -> [ X ] - Your Pawn has the opportunity to kill the enemy Pawn only on THAT turn
+            -> [ X ] - Your Pawn still moves diagonally like how it normally would
+    [  ] - Be able to perform a castle
+        ↪ Rules:
+            -> [  ] - King & Rook both have to be on their initial squares
+            -> [  ] - King & Rook nust have no pieces in between them
+            -> [  ] - King & Rook must not have any tiles that are attackable / would put the King in check in between them
+            -> [  ] - King moves 2 squares towards the Rook
+            -> [  ] - Rook hops over the king and sits next to the King
+            -> [  ] - Can be done using either rook and for either side of the board
+    [  ] - Check for a Stalemate
+        ↪ Rules:
+            -> [  ] - Either King has no more safe spaces (or legal moves) to go to outside of the one it's currently in, game is a draw
+    [  ] - Check for a Threefold Repetition
+        ↪ Rules:
+            -> [  ] - If the same move occurs three times and the same possible move is available (including castling and en passant), a player can claim a draw
+    [  ] - Check for Fifty-Move Rule
+        ↪ Rules:
+            -> [  ] - If no capture or pawn move has occurred in the last fifty consecutive moves by both players, a player can claim a draw
+    [  ] - Check for a Perpetual Check
+        ↪ Rules:
+            -> [  ] - One player repeatedly checks opponent's King without making progress and the other player cannot escape the checks
+            -> May be objective, so I'm not sure
+    [  ] - Insufficient Material
+        ↪ Rules:
+            -> [  ] - Game is a draw when:
+                - [  ] - King vs. King
+                - [  ] - King & Bishop vs. King
+                - [  ] - King & Knight vs. King
+                - [  ] - King & Bishop vs. King & Bishop
+                - [  ] - King & 2 Knights vs. King
+                - [  ] - King & Bishop vs. King & Knight
+                - [  ] - King & 2 Knights vs. King & Bishop
+                - [ O ] - King & Rook vs. King (DEPENDS ON PLAYERS SKILL LEVEL)
+[ X ] - Setup the turn based system
+[ X ] - Check for & prevent illegal moves from being done (Longest and more grueling process)
+    -> [ X ] - Stop King from going into the diagnols of Pawns (an area where they will be in check)
+    -> [ X ] - Stop King from going into an area where they will be in check from a Rook
+    -> [ X ] - Stop King from going into an area where they will be in check from a Bishop
+    -> [ X ] - Stop King from going into an area where they will be in check from a Queen
+    -> [ X ] - Stop King from going into an area where they will be in check from a Knight
+    -> [ X ] - Stop King from being able to go near the opposing kings movement spaces
+    -> [ X ] - When in check, only display possible movements to get out of check
+        -> [ X ] - Possible interceptions when king is in check (other piece goes in front of attacking pieces path) <- HARD
+        -> [ X ] - Spaces king can go to that are safe
+        -> [ X ] - Same color pieces can kill the opposing piece that put the king in check
+[  ] - Display who's turn it is
+[ X ] - Display captured pieces
+[  ] - Display Timer
+[  ] - Check for a Draw
+    -> [  ] - Only kings left on the board
+[  ] - Check for a CheckMate (Win)
+    -> [  ] - King has no safe spaces to go to and his current space is unsafe / in check
+    -> [  ] - Someone runs out of time (they lose)
+[  ] - Display end screen
+
+
+⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎
+⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎
+⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎
+
+
+Extras:
+[ X ] - Make Responsive
+[  ] - Create Undo button
+    -> [  ] - Save every previous board change and revert
+[  ] - Add some better styling
+[ X ] - Add Sound
+[  ] - Create New Game button (Will restart the game)
+[  ] - Make moves possible moves unseeable (Game will be the same and illegal moves cannot be done, but the game won't show possible moves like En Passants like how it does right now)
+[  ] - Make Draggable
+
+⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎
+⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎
+⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎
+
+
+Challenges (these are diabolical, might have to come back to it):
+[  ] - Make it player vs player online and realtime
+    -> [  ] - Perhaps a share link
+[  ] - Make a player vs AI mode 
+    -> [  ] - Create an AI 
+
+
+⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎
+⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎
+⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎
+ 
+
+* Currently using (fav) icons, but may change to these:
+STYLES:
+white chess king	♔	U+2654	&#9812;	&#x2654;
+white chess queen	♕	U+2655	&#9813;	&#x2655;
+white chess rook	♖	U+2656	&#9814;	&#x2656;
+white chess bishop	♗	U+2657	&#9815;	&#x2657;
+white chess knight	♘	U+2658	&#9816;	&#x2658;
+white chess pawn	♙	U+2659	&#9817;	&#x2659;
+black chess king	♚	U+265A	&#9818;	&#x265A;
+black chess queen	♛	U+265B	&#9819;	&#x265B;
+black chess rook	♜	U+265C	&#9820;	&#x265C;
+black chess bishop	♝	U+265D	&#9821;	&#x265D;
+black chess knight	♞	U+265E	&#9822;	&#x265E;
+black chess pawn	♟︎	U+265F	&#9823;	&#x265F;
