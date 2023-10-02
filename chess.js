@@ -1,3 +1,6 @@
+// Imports
+import { CountdownTimer } from './timer.js';
+
 // Classes:
 class Board {
     constructor() {
@@ -28,7 +31,7 @@ class Board {
                 movementShownDiv.setAttribute('id', `${tileNum}-can-move`);
                 movementShownDiv.style.fontSize = '15px';
 
-                if ((row + col) % 2 === 0) tile.classList.add('black');
+                if ((row + col) % 2 === 0) tile.classList.add('black_');
                 else tile.classList.add('white');
 
                 tile.appendChild(movementShownDiv);
@@ -255,6 +258,42 @@ class Board {
         }
     }
 
+    setTimers(seconds) {
+        whitesTimer.setTimer(seconds);
+        blacksTimer.setTimer(seconds);
+    }
+
+    beginTimers() {
+        whitesTimer.beginTimer();
+        blacksTimer.beginTimer();
+    }
+
+    endTurn() {
+        whitesTurn = !whitesTurn;
+        if (whitesTurn) {
+            whitesTimer.beginTimer();
+            blacksTimer.pauseTimer();
+        } else {
+            whitesTimer.pauseTimer();
+            blacksTimer.beginTimer();
+        }
+        this.updateTurn();
+    }
+
+    updateTurn() {
+        let playerTurn = document.getElementById('playerTurns').querySelector('h3');
+        let circle = document.querySelector('#playerTurns .circle');
+        circle.classList.remove('white-circle', 'black-circle');
+
+        if (whitesTurn) {
+            playerTurn.innerHTML = 'Whites Turn';
+            circle.classList.add('white-circle');
+        } else {
+            playerTurn.innerHTML = 'Blacks Turn';
+            circle.classList.add('black-circle');
+        }
+    }
+
 }
 
 class Piece {
@@ -266,8 +305,13 @@ class Piece {
         this.row = row;
         this.col = col;
 
-        if (type[type.length - 1] === 'b') this.color = 'black';
-        else this.color = 'white';
+        if (type[type.length - 1] === 'b') {
+            this.color = 'black';
+            this.King = 'king-b';
+        } else {
+            this.color = 'white';
+            this.King = 'king-w';
+        }
 
         this.tile = document.getElementById(tileNum);
 
@@ -300,19 +344,31 @@ class Piece {
 
     // Makes it possible for user to move / interact with the board
     setClickEvent() {
+
+        let coords = GameBoard.findPiece(this.King);
         let possibleMoves = this.getMoves();
-        this.clickHandler = () => {
-            clearPossibleMoves();
-            if (this.type === 'pawn') { // Pawns have a special case
+
+        if (GameBoard.isCheck(coords.row, coords.col)) { // If the King is not in check, reveal all possible moves 
+            this.clickHandler = () => {
+                clearPossibleMoves();
+                for (const move of possibleMoves) {
+                    for (let position of possibleInterceptions) {
+                        if ((move.canMoveRow === position.row && move.canMoveCol === position.col) || this.type === 'king') {
+                            this.showMoves(move.canMoveRow, move.canMoveCol, move.enPassant, move.EPCoords);
+                        }
+                    }
+                }
+            }
+
+        } else {
+            this.clickHandler = () => {
+                clearPossibleMoves();
                 for (const move of possibleMoves) {
                     this.showMoves(move.canMoveRow, move.canMoveCol, move.enPassant, move.EPCoords);
                 }
-            } else {
-                for (const move of possibleMoves) {
-                    this.showMoves(move.canMoveRow, move.canMoveCol);
-                }
             }
         }
+
         this.tile.addEventListener('click', this.clickHandler);
     }
 
@@ -343,6 +399,7 @@ class Piece {
     movePiece(canMoveRow, canMoveCol, enPassant, EPCoords) {
         movedUp2 = false;
         enPassantCoords = [];
+        possibleInterceptions = [];
         let board = GameBoard.board;
 
         if (this.type === 'pawn') {
@@ -375,6 +432,7 @@ class Piece {
                     blackCapturedPieces.push(board[EPCoords[0]][EPCoords[1]]);
                 }
                 board[EPCoords[0]][EPCoords[1]] = '';
+                captureSound();
             }
 
         }
@@ -394,10 +452,12 @@ class Piece {
 
         // Capturing
         let piece = board[this.row][this.col] // Take piece
+        if (board[canMoveRow][canMoveCol] === '') moveSound();
+        else captureSound();
         board[canMoveRow][canMoveCol] = piece; // Move it to its new position
         board[this.row][this.col] = ''; // Delete the piece from it's old position
-        whitesTurn = !whitesTurn;
         clearPossibleMoves();
+        GameBoard.endTurn();
         GameBoard.Update();
     }
 
@@ -500,6 +560,7 @@ class Queen {
         this.row = row;
         this.col = col;
         this.possibleMoves = [];
+        this.checkedKing = false;
     }
 
     getMoves(board) {
@@ -518,15 +579,20 @@ class Queen {
         for (const direction of directions) {
             let row = this.row + direction[0];
             let col = this.col + direction[1];
+            let path = [];
 
             // Continue moving in the current direction until we hit the edge of the board or an occupied square
             while (row >= 0 && row < 8 && col >= 0 && col < 8) {
 
                 if (board[row][col] === '') { // The square is empty, so we can move there
                     this.setMove(row, col);
+                    if (!this.checkedKing) { // Can be a path that another piece can go into to block the check
+                        path.push({ row: row, col: col });
+                    }
 
                 } else if (board[row][col] === this.enemyKing) {
                     this.setMove(row, col);
+                    this.checkedKing = true;
 
                 } else if (isBlack(board[row][col], this.reverse)) { // The square is occupied by an opponent's piece, so we can move there and capture it
                     this.setMove(row, col);
@@ -536,10 +602,23 @@ class Queen {
                     break; // Stop further movement in this direction
                 }
 
+                if (this.checkedKing && path.length > 0) {
+                    for (let positions of path) {
+                        possibleInterceptions.push(positions);
+                    }
+                }
+
                 // Move to the next square in the same direction
                 row += direction[0];
                 col += direction[1];
             }
+        }
+
+        if (this.checkedKing) { // if there is a check
+            possibleInterceptions.push( // Add in the pieces current position, to make it a possible piece to kill in order to get the king out of check
+                { row: this.row, col: this.col }
+            );
+            possibleInterceptions = removeDuplicates(possibleInterceptions);
         }
 
         return this.possibleMoves;
@@ -554,6 +633,7 @@ class Queen {
             }
         );   
     }
+
 }
 
 class Bishop {
@@ -574,6 +654,7 @@ class Bishop {
         this.row = row;
         this.col = col;
         this.possibleMoves = [];
+        this.checkedKing = false; 
     }
 
     getMoves(board) {
@@ -587,26 +668,47 @@ class Bishop {
         for (const direction of directions) {
             let row = this.row + direction[0];
             let col = this.col + direction[1];
+            let path = [];
 
             // While the rows and columns are within the range of the board
             while (row >= 0 && row < 8 && col >= 0 && col < 8) {
-                // If the destination is empty, display it and move on to next square on the path
-                if (board[row][col] === '') {
+
+                if (board[row][col] === '') { // If the destination is empty, move on to next square on the path
                     this.setMove(row, col);
+                    if (!this.checkedKing) { // Can be a path that another piece can go into to block the check
+                        path.push({ row: row, col: col });
+                    }
+
                 } else if (board[row][col] === this.enemyKing) {
                     this.setMove(row, col);
-                } else if (isBlack(board[row][col], this.reverse)) {
-                    // If the destination is taken / occupied by an enemy, make that position the last position the bishop can go to and move on to the next path
+                    this.checkedKing = true;
+
+                } else if (isBlack(board[row][col], this.reverse)) { // If the destination is taken / occupied by an enemy, make that position the last position the bishop can go to and move on to the next path
                     this.setMove(row, col);
                     break;
-                } else {
-                    // the destination is occupied (it must be occupied by the same color) move to the next path                        
-                    break;
+
+                } else {                      
+                    break; // the destination is occupied (it must be occupied by the same color) move to the next path  
                 }
+
+                if (this.checkedKing && path.length > 0) {
+                    for (let positions of path) {
+                        possibleInterceptions.push(positions);
+                    }
+                }
+
+                // continue on this path
                 row += direction[0];
                 col += direction[1];
             }
 
+        }
+
+        if (this.checkedKing) { // if there is a check
+            possibleInterceptions.push( // Add in the pieces current position, to make it a possible piece to kill in order to get the king out of check
+                { row: this.row, col: this.col }
+            );
+            possibleInterceptions = removeDuplicates(possibleInterceptions);
         }
 
         return this.possibleMoves;
@@ -630,8 +732,13 @@ class Knight {
         this.color = color;
 
         // Will help me change the logic for the based off color
-        if (this.color === "white") this.reverse = false;
-        else this.reverse = true;
+        if (this.color === "white") {
+            this.reverse = false;
+            this.enemyKing = 'king-b';
+        } else {
+            this.reverse = true;
+            this.enemyKing = 'king-w';
+        }
 
         this.row = row;
         this.col = col;
@@ -663,6 +770,7 @@ class Knight {
                 // Check if the destination tile is empty or contains an enemy piece
                 if (board[move.row][move.col] === '' || isBlack(board[move.row][move.col], this.reverse)) {
                     this.setMove(move.row, move.col);
+                    if (board[move.row][move.col] === this.enemyKing) possibleInterceptions.push({ row: this.row, col: this.col });
                 }
             }
         }
@@ -699,6 +807,7 @@ class Rook {
         this.row = row;
         this.col = col;
         this.possibleMoves = [];
+        this.checkedKing = false;
     }
 
     getMoves(board) {
@@ -712,14 +821,20 @@ class Rook {
         for (const direction of directions) {
             let row = this.row + direction[0];
             let col = this.col + direction[1];
+            let path = [];
 
             // Continue moving in the current direction until we hit the edge of the board or an occupied square
             while (row >= 0 && row < 8 && col >= 0 && col < 8) {
+
                 if (board[row][col] === '') { // The square is empty, so we can move there
                     this.setMove(row, col);
+                    if (!this.checkedKing) { // Can be a path that another piece can go into to block the check
+                        path.push({ row: row, col: col });
+                    }
 
                 } else if (board[row][col] === this.enemyKing) { // The square is occupied by the king, aka you put the king in check
                     this.setMove(row, col); // Dont stop further movement in this direction because then the full range of the rook wouldn't affect the king's movement
+                    this.checkedKing = true;
 
                 } else if (isBlack(board[row][col], this.reverse)) { // The square is occupied by an opponent's piece, so we can move there and capture it
                     this.setMove(row, col);
@@ -729,10 +844,23 @@ class Rook {
                     break; // Stop movement in this direction
                 }
 
+                if (this.checkedKing && path.length > 0) {
+                    for (let positions of path) {
+                        possibleInterceptions.push(positions);
+                    }
+                }
+
                 // Move to the next square in the same direction
                 row += direction[0];
                 col += direction[1];
             }
+        }
+
+        if (this.checkedKing) { // if there is a check
+            possibleInterceptions.push( // Add in the pieces current position, to make it a possible piece to kill in order to get the king out of check
+                { row: this.row, col: this.col }
+            );
+            possibleInterceptions = removeDuplicates(possibleInterceptions);
         }
 
         return this.possibleMoves;
@@ -760,11 +888,13 @@ class Pawn {
             this.enemy = 'pawn-b';
             this.initialRow = 6;
             this.reverse = false;
+            this.enemyKing = 'king-b';
         } else {
             this.direction = -1;
             this.enemy = 'pawn-w';
             this.initialRow = 1;
             this.reverse = true;
+            this.enemyKing = 'king-w';
         }
 
         this.row = row;
@@ -800,16 +930,18 @@ class Pawn {
             this.setMove(this.row - this.direction, this.col); // up 1
             this.setMove(this.row - (2 * this.direction), this.col); // up 2
 
-        } else if (board[this.row - this.direction][this.col] === '') { // if there is nothing in front of me
+        } else if (board[this.row - this.direction][this.col] === '' && (this.row != 7 || this.row != 0)) { // if there is nothing in front of me
             this.setMove(this.row - this.direction, this.col); // up 1 
         }
 
         if (board[this.row - this.direction][this.col - 1] && isBlack(board[this.row - this.direction][this.col - 1], this.reverse)) { // left diagnol
             this.setMove(this.row - this.direction, this.col - 1);
+            if (board[this.row - this.direction][this.col - 1] === this.enemyKing) possibleInterceptions.push({ row: this.row, col: this.col });
         }
 
         if (board[this.row - this.direction][this.col + 1] && isBlack(board[this.row - this.direction][this.col + 1], this.reverse)) { // right diagnol
             this.setMove(this.row - this.direction, this.col + 1);
+            if (board[this.row - this.direction][this.col + 1] === this.enemyKing) possibleInterceptions.push({ row: this.row, col: this.col });
         }
 
         return this.possibleMoves;
@@ -850,6 +982,7 @@ function isBlack(piece, reverse) {
 }
 
 function showPromotionPopup(promotionCallback) {
+    notifySound();
     const popup = document.createElement('div');
     popup.className = 'promotion-popup';
 
@@ -877,21 +1010,55 @@ function showPromotionPopup(promotionCallback) {
     document.body.appendChild(popup);
 }
 
+function removeDuplicates(arr) {
+    const uniqueSet = new Set();
+
+    arr.forEach(subArr => {
+        // Convert each sub-array to a string and add it to the Set
+        uniqueSet.add(JSON.stringify(subArr));
+    });
+
+    // Convert the Set back to an array of arrays
+    const uniqueArr = Array.from(uniqueSet, JSON.parse);
+
+    return uniqueArr;
+}
+
+// Sound
+let capture_ = new Audio('sound/capture.mp3');
+let move_ = new Audio('sound/move-self.mp3');
+let notify_ = new Audio('sound/notify.mp3');
+function captureSound() {
+    capture_.play()
+}
+
+function moveSound() {
+    move_.play()
+}
+
+function notifySound() {
+    notify_.play()
+}
+
 // Game Variables:
 let whitesTurn = true;
 let movedUp2 = false;
 let enPassantCoords = [];
 let whiteCapturedPieces = [];
 let blackCapturedPieces = [];
+let possibleInterceptions = [];
 
 const GameBoard = new Board();
+const whitesTimer = new CountdownTimer('whites-timer');
+const blacksTimer = new CountdownTimer('blacks-timer');
 
 // Game Functions
 function startGame() {
     GameBoard.setupBoard();
     GameBoard.resetBoard();
-    // console.log(GameBoard.board);
     GameBoard.updateBoard();
+    GameBoard.setTimers(600);
+    whitesTimer.beginTimer();
 }
 
 function restartGame() {

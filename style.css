@@ -24,7 +24,7 @@
     position: relative;
 }
 
-.black {
+.black_ {
     background:	#7F461B;
 }
 
@@ -76,7 +76,7 @@
 }
 
 .header {
-    font-size: 4rem !important;
+    font-size: 3rem !important;
 }
 
 .d-flex {
@@ -86,15 +86,55 @@
 
 #captured-blacks,
 #captured-whites {
-    width: calc(15% - var(--borderSize));
+    width: 100%;
+    height: calc( ( (8 * var(--tileSize)) + (2 * var(--borderSize)) ) / 1.25 ); 
     padding: 20px;
-    background-color: #333; 
+    background-color: #333;  
+    font-size: calc(var(--tileSize) / 1.5);
+    position: relative;
+    top: 0px;
+}
+
+.side-panel {
+    width: calc(15% - var(--borderSize)); 
     margin: 5px; 
     font-size: calc(var(--tileSize) / 1.5);
     position: relative;
     top: 0px;
 }
 
+.timer {
+    width: 100%;
+    height: calc( (8 * var(--tileSize)) + (2 * var(--borderSize)) - ( ( (8 * var(--tileSize)) + (2 * var(--borderSize)) ) / 1.25) ); 
+    padding: 20px;
+    background-color: #333;  
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* color: goldenrod; */
+}
+
+.goldColor {
+    color: goldenrod;
+}
+
+#blacks-timer {
+    border-top: 10px solid;
+}
+
+#whites-timer {
+    border-bottom: 10px solid;
+}
+
+#playerTurns {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 10px;
+    background-color: #333; 
+    border-top: 15px solid goldenrod;
+}
 
 /* Responsiveness */
 @media screen and (max-width: 1500px) {
@@ -105,11 +145,6 @@
     .header {
         font-size: 3rem !important; 
     }
-
-    #captured-blacks,
-    #captured-whites {
-        width: calc(20% - var(--borderSize));
-    }
 }
 
 @media screen and (max-width: 1200px) {
@@ -118,12 +153,33 @@
         align-items: center;
     }
 
-    .RESPONSIVE-CAPTURES {
+    .side-panel {
+        width: 100%;
+        margin: 5px;
         display: flex;
-        justify-content: space-around;
-        min-width: calc((8 * var(--tileSize)) + (2 * var(--borderSize)));;
-        margin-top: 20px;
-        margin-bottom: 20px;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #captured-blacks,
+    #captured-whites {
+        width: calc((8 * var(--tileSize)) + (2 * var(--borderSize)));
+        height: auto;
+    }
+
+    #playerTurns {
+        position: relative;
+        margin-top: 2rem;
+    }
+
+    .timer {
+        border-top: none;
+    }
+
+    #blacks-timer,
+    #whites-timer {
+        height: auto;
+        width: calc((8 * var(--tileSize)) + (2 * var(--borderSize)));
     }
 }
 
@@ -135,11 +191,25 @@
     .header {
         font-size: 2.5rem !important; /* Reduce header font size */
     }
+
+    #captured-blacks,
+    #captured-whites {
+        padding: 10px;
+    }
 }
 
 @media screen and (max-width: 650px) {
     :root {
         --tileSize: 70px;
+    }
+    
+    #playerTurns {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        padding: 10px;
+        background-color: #333; 
+        border-top: 15px solid goldenrod;
     }
 }
 
@@ -164,5 +234,56 @@
 @media screen and (max-width: 460px) {
     :root {
         --tileSize: 45px; /* Reduce tile size for medium-sized screens */
+    }
+}
+
+@media screen and (max-height: 750px) {
+    #playerTurns {
+        position: relative;
+    }
+}
+
+
+
+/* Nice Chess Animations */
+.circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    position: absolute;
+    animation-duration: 2s;
+    animation-timing-function: linear;
+    bottom: 75px;
+    font-size: 25px;
+}
+
+.white-circle {
+    /* background-color: white; */
+    animation-name: moveWhite;
+    animation-fill-mode: forwards; /* Keep the final animation state */
+    color: white;
+}
+
+@keyframes moveWhite {
+    0% {
+        left: 0;
+    }
+    100% {
+        left: calc(100% - 30px);
+    }
+}
+
+.black-circle {
+    /* background-color: black; */
+    animation-name: moveBlack;
+    color: black;
+}
+
+@keyframes moveBlack {
+    0% {
+        left: calc(100% - 20px);
+    }
+    100% {
+        left: 0;
     }
 }
