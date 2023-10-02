@@ -31,7 +31,7 @@ export class CountdownTimer {
                 clearInterval(this.intervalId);
                 this.isRunning = false;
             }
-            }, 1000); // Update every 1 second (1000 milliseconds)
+            }, 1000);
             this.isRunning = true;
         }
     }
