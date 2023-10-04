@@ -60,6 +60,42 @@
             <i class="fa-solid fa-chess-rook"></i>
         </div>
     </div>
+
+    <!-- Start Container -->
+    <div id="start-popup" class="popup-container">
+        <div class="popup">
+            <h1>Welcome! Ready to play Chess?</h1>
+
+            <p>Select game mode:</p>
+            <button data-mode='' id="player-vs-computer-button" class="game-mode-button disabled" disabled>Player vs Computer</button>
+            <button data-mode='' id="player-vs-player-button" class="game-mode-button active">Player vs Player</button>
+
+            <hr>
+
+            <p>Select match duration:</p>
+            <button data-match-time="300" class="duration-button">10 Minutes</button>
+            <button data-match-time="600" class="duration-button">20 Minutes</button>
+            <button data-match-time="900" class="duration-button">30 Minutes</button>
+
+            <hr>
+            <p>Select what orientation you would like to play in:</p>
+            <button data-orientation='' id="flip-button" class="orientation-button disabled" disabled>Flip (Every Turn)</button>
+            <button data-orientation='' id="white-side-button" class="orientation-button active">White Side</button>
+            <button data-orientation='' id="black-side-button" class="orientation-button disabled" disabled>Black Side</button>
+            <button data-orientation='' id="both-sides-button" class="orientation-button disabled" disabled>Both Sides</button>
+
+            <br><br>
+
+            <button id="start-game-button">Start Game</button>
+        </div>
+    </div>
+
+    <!-- Winner Container -->
+    <div id="win-screen" class="popup-container">
+        <div class="popup">
+            
+        </div>
+    </div>
     
 </body>
 </html>

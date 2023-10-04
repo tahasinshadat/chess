@@ -47,13 +47,13 @@ CheckList:
     [  ] - Check for a Stalemate
         ↪ Rules:
             -> [  ] - Either King has no more safe spaces (or legal moves) to go to outside of the one it's currently in, game is a draw
-    [  ] - Check for a Threefold Repetition
+    [ o ] - Check for a Threefold Repetition
         ↪ Rules:
             -> [  ] - If the same move occurs three times and the same possible move is available (including castling and en passant), a player can claim a draw
-    [  ] - Check for Fifty-Move Rule
+    [ o ] - Check for Fifty-Move Rule
         ↪ Rules:
             -> [  ] - If no capture or pawn move has occurred in the last fifty consecutive moves by both players, a player can claim a draw
-    [  ] - Check for a Perpetual Check
+    [ o ] - Check for a Perpetual Check
         ↪ Rules:
             -> [  ] - One player repeatedly checks opponent's King without making progress and the other player cannot escape the checks
             -> May be objective, so I'm not sure
@@ -80,12 +80,12 @@ CheckList:
         -> [ X ] - Possible interceptions when king is in check (other piece goes in front of attacking pieces path) <- HARD
         -> [ X ] - Spaces king can go to that are safe
         -> [ X ] - Same color pieces can kill the opposing piece that put the king in check
-[  ] - Display who's turn it is
+[ X ] - Display who's turn it is
 [ X ] - Display captured pieces
-[  ] - Display Timer
-    -> [  ] - Give User options of 10 min (5 mins each), 20 min (10 mins each), and 30 min (15 mins each) games
-[  ] - Check for a CheckMate / Win
-    -> [  ] - King has no safe spaces to go to and his current space is unsafe / in check
+[ X ] - Display Timer
+    -> [ X ] - Give User options of 10 min (5 mins each), 20 min (10 mins each), and 30 min (15 mins each) games
+[ X ] - Check for a CheckMate / Win
+    -> [ X ] - King has no safe spaces to go to and his current space is unsafe / in check
     -> [  ] - Opponent runs out of time
 [  ] - Display end screen
 

@@ -263,11 +263,6 @@ class Board {
         blacksTimer.setTimer(seconds);
     }
 
-    beginTimers() {
-        whitesTimer.beginTimer();
-        blacksTimer.beginTimer();
-    }
-
     endTurn() {
         whitesTurn = !whitesTurn;
         if (whitesTurn) {
@@ -348,6 +343,14 @@ class Piece {
         let coords = GameBoard.findPiece(this.King);
         let possibleMoves = this.getMoves();
 
+        // Check Mate
+        if (this.type === 'king') {
+            if (this.piece.checkMate) {
+                endGame(this.color);
+                console.log('died')
+            }
+        }
+
         if (GameBoard.isCheck(coords.row, coords.col)) { // If the King is not in check, reveal all possible moves 
             this.clickHandler = () => {
                 clearPossibleMoves();
@@ -374,6 +377,20 @@ class Piece {
 
     // Shows the Moves to the Players
     showMoves(canMoveRow, canMoveCol, enPassant = false, EPCoords = []) {
+        if (!start) { // When player clicks on a white piece, the time will begin (Should only happen once)
+            whitesTimer.beginTimer();
+            start = true;
+            // Check For Time Win
+            timeCheck = setInterval(() => {
+                if (whitesTimer.seconds <= 0) {
+                    endGame('black');
+                }
+                if (blacksTimer.seconds <= 0) {
+                    endGame('white');
+                }
+            }, 1000);
+        }
+
         let currentTile = 1
         for (let row = 0; row < GameBoard.board.length; row++) {
             for (let col = 0; col < GameBoard.board.length; col++) {
@@ -491,6 +508,7 @@ class King {
         this.row = row;
         this.col = col;
         this.possibleMoves = [];
+        this.checkMate = false;
     }
 
     getMoves(board) {
@@ -525,6 +543,10 @@ class King {
                 }
 
             }
+        }
+
+        if (this.possibleMoves.length === 0 && GameBoard.isCheck(this.row, this.col)) {
+            this.checkMate = true;
         }
 
         return this.possibleMoves;
@@ -1047,23 +1069,112 @@ let enPassantCoords = [];
 let whiteCapturedPieces = [];
 let blackCapturedPieces = [];
 let possibleInterceptions = [];
+let start = false;
 
 const GameBoard = new Board();
 const whitesTimer = new CountdownTimer('whites-timer');
 const blacksTimer = new CountdownTimer('blacks-timer');
 
+
 // Game Functions
-function startGame() {
-    GameBoard.setupBoard();
-    GameBoard.resetBoard();
+function startGame(matchTime) {
     GameBoard.updateBoard();
-    GameBoard.setTimers(600);
-    whitesTimer.beginTimer();
+    GameBoard.setTimers(matchTime);
+    document.getElementById('playerTurns').style.display = 'block';
+    closePopup();
 }
 
 function restartGame() {
     GameBoard.resetBoard();
 
+    clearInterval(timeCheck);
+    whitesTimer.pauseTimer();
+    blacksTimer.pauseTimer();
+
+    whitesTurn = true;
+    movedUp2 = false;
+    start = false;
+
+    enPassantCoords = [];
+    whiteCapturedPieces = [];
+    blackCapturedPieces = [];
+    possibleInterceptions = [];
+
+    GameBoard.Update();
 }
 
-startGame();
+let timeCheck;
+
+function setUpGame() {
+    document.getElementById('playerTurns').style.display = 'none';
+    GameBoard.setupBoard();
+    GameBoard.resetBoard();
+    GameBoard.updateBoard();
+    openPopup();
+}
+
+function endGame(color) {
+    restartGame();
+    console.log(`${color} Wins!`);
+}
+
+function openPopup() {
+    document.getElementById('start-popup').style.display = 'flex';
+    initializeButtons();
+}
+
+function closePopup() {
+    document.getElementById('start-popup').style.display = 'none';
+}
+
+// Basic UI
+function initializeButtons() {
+
+    const gameModeButtons = document.querySelectorAll(".game-mode-button");
+    const durationButtons = document.querySelectorAll(".duration-button");
+    const orientationButtons = document.querySelectorAll(".orientation-button");
+    const startGameButton = document.getElementById("start-game-button");
+
+    // Store default choices
+    let selectedGameMode = "Player vs Computer";
+    let selectedMatchTime = 300;
+    let selectedOrientation = "Flip (Every Turn)";
+
+    // Set the active state of the buttons
+    function setActive(buttons, selectedButton) {
+        buttons.forEach(button => {
+            if (button === selectedButton) {
+                button.classList.add("active");
+            } else {
+                button.classList.remove("active");
+            }
+        });
+    }
+
+    gameModeButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            selectedGameMode = button.getAttribute("data-mode");
+            setActive(gameModeButtons, button);
+        });
+    });
+
+    durationButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            selectedMatchTime = parseInt(button.getAttribute("data-match-time"));
+            setActive(durationButtons, button);
+        });
+    });
+
+    orientationButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            selectedOrientation = button.getAttribute("data-orientation");
+            setActive(orientationButtons, button);
+        });
+    });
+
+    startGameButton.addEventListener("click", () => {
+        startGame(selectedMatchTime);
+    });
+}
+
+setUpGame();
