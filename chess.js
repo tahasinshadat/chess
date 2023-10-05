@@ -64,7 +64,7 @@ class Board {
 
     renderPieces() {
         for (let piece = 0; piece < this.pieces.length; piece++) {
-            this.pieces[piece].Render(this.board);
+            this.pieces[piece].Render(orientation);
         }
     }
 
@@ -86,6 +86,8 @@ class Board {
     updateMiscellaneous() {
         const capturedWhites = document.getElementById('captured-whites');
         const capturedBlacks = document.getElementById('captured-blacks');
+        const whiteTime = document.getElementById('whites-timer');
+        const blackTime = document.getElementById('blacks-timer');
 
         capturedWhites.innerHTML = '';
         let whiteHeading = document.createElement('h4');
@@ -110,6 +112,38 @@ class Board {
             piece.className = `fa-solid fa-chess-${type.slice(0, -2)} mx-1`;
             piece.style.color = 'rgb(200, 200, 200)';
             capturedBlacks.appendChild(piece);
+        }
+
+        if (orientation === 'whiteSide') {
+            capturedWhites.classList.remove('flip-180');
+            capturedBlacks.classList.remove('flip-180');
+            whiteTime.classList.remove('flip-180');
+            blackTime.classList.remove('flip-180');
+        }
+        if (orientation === 'blackSide') {
+            capturedWhites.classList.add('flip-180');
+            capturedBlacks.classList.add('flip-180');
+            whiteTime.classList.add('flip-180');
+            blackTime.classList.add('flip-180');
+        }
+        if (orientation === 'flip') {
+            if (whitesTurn) {
+                capturedWhites.classList.remove('flip-180');
+                capturedBlacks.classList.remove('flip-180');
+                whiteTime.classList.remove('flip-180');
+                blackTime.classList.remove('flip-180');
+            } else {
+                capturedWhites.classList.add('flip-180');
+                capturedBlacks.classList.add('flip-180');
+                whiteTime.classList.add('flip-180');
+                blackTime.classList.add('flip-180');
+            }
+        }
+        if (orientation === 'both') {
+            capturedWhites.classList.remove('flip-180');
+            whiteTime.classList.remove('flip-180');
+            capturedBlacks.classList.add('flip-180');
+            blackTime.classList.add('flip-180');
         }
 
     }
@@ -328,18 +362,35 @@ class Piece {
     }
 
     // Creates the piece in HTML via icons
-    createPiece(type) {
+    createPiece(type, orientation) {
         let piece = document.createElement('i');
-        piece.className = `fa-solid fa-chess-${type}`;
         if (this.color === 'white') {
             piece.style.color = 'rgb(200, 200, 200)';
         }
+
+        if (orientation === 'whiteSide') piece.className = `fa-solid fa-chess-${type}`;
+        if (orientation === 'blackSide') piece.className = `fa-solid fa-chess-${type} flip-180`;
+        if (orientation === 'flip') {
+            if (whitesTurn) {
+                piece.className = `fa-solid fa-chess-${type}`;
+            } else {
+                piece.className = `fa-solid fa-chess-${type} flip-180`;
+            }
+        }
+        if (orientation === 'both') {
+            if (this.color === 'white') {
+                piece.className = `fa-solid fa-chess-${type}`;
+            } else {
+                piece.className = `fa-solid fa-chess-${type} flip-180`;
+            }
+        }
+        
         return piece;
     }
 
     // Injects the piece into HTML
-    Render() {
-        this.tile.appendChild(this.createPiece(this.type)); 
+    Render(orientation) {
+        this.tile.appendChild(this.createPiece(this.type, orientation)); 
         if (this.color == 'white' && whitesTurn) this.setClickEvent();  
         if (this.color == 'black' && !whitesTurn) this.setClickEvent();     
     }
@@ -637,14 +688,10 @@ class Queen {
                     this.setMove(row, col);
                     this.checkedKing = true;
 
-                } else if (isBlack(board[row][col], this.reverse)) { // The square is occupied by an opponent's piece, so we can move there and capture it
+                } else { // The square is occupied by a piece
                     this.setMove(row, col);
                     break; // Stop further movement in this direction
-
-                } else { // The square is occupied by our own piece, so we cannot move beyond it
-                    this.setMove(row, col);
-                    break; // Stop further movement in this direction
-                }
+                } 
 
                 if (this.checkedKing && path.length > 0) {
                     for (let positions of path) {
@@ -727,13 +774,9 @@ class Bishop {
                     this.setMove(row, col);
                     this.checkedKing = true;
 
-                } else if (isBlack(board[row][col], this.reverse)) { // If the destination is taken / occupied by an enemy, make that position the last position the bishop can go to and move on to the next path
-                    this.setMove(row, col);
-                    break;
-
-                } else {       
+                } else {  // the destination is occupied by a piece 
                     this.setMove(row, col);               
-                    break; // the destination is occupied (it must be occupied by the same color) move to the next path  
+                    break; 
                 }
 
                 if (this.checkedKing && path.length > 0) {
@@ -878,11 +921,7 @@ class Rook {
                     this.setMove(row, col); // Dont stop further movement in this direction because then the full range of the rook wouldn't affect the king's movement
                     this.checkedKing = true;
 
-                } else if (isBlack(board[row][col], this.reverse)) { // The square is occupied by an opponent's piece, so we can move there and capture it
-                    this.setMove(row, col);
-                    break; // Stop further movement in this direction
-
-                } else { // The square is occupied by our own piece, so we can't move past it
+                } else { // The square is occupied by a piece
                     this.setMove(row, col);
                     break; // Stop movement in this direction
                 }
@@ -1091,6 +1130,8 @@ let whiteCapturedPieces = [];
 let blackCapturedPieces = [];
 let possibleInterceptions = [];
 let start = false;
+let orientation;
+
 
 const GameBoard = new Board();
 const whitesTimer = new CountdownTimer('whites-timer');
@@ -1099,7 +1140,7 @@ const blacksTimer = new CountdownTimer('blacks-timer');
 
 // Game Functions
 function startGame(matchTime) {
-    GameBoard.updateBoard();
+    GameBoard.Update();
     GameBoard.setTimers(matchTime);
     document.getElementById('playerTurns').style.display = 'block';
     closePopup();
@@ -1173,7 +1214,7 @@ function initializeButtons() {
     // Store default choices
     let selectedGameMode = "Player vs Computer";
     let selectedMatchTime = 300;
-    let selectedOrientation = "Flip (Every Turn)";
+    orientation = "whiteSide";
 
     // Set the active state of the buttons
     function setActive(buttons, selectedButton) {
@@ -1202,7 +1243,7 @@ function initializeButtons() {
 
     orientationButtons.forEach(button => {
         button.addEventListener("click", () => {
-            selectedOrientation = button.getAttribute("data-orientation");
+            orientation = button.getAttribute("data-orientation");
             setActive(orientationButtons, button);
         });
     });

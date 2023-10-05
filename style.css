@@ -189,6 +189,10 @@ button:hover {
     padding-right: 40px;
 }
 
+.flip-180 {
+    transform: rotate(180deg);
+    transform-origin: center;
+}
 
 /* Responsiveness */
 @media screen and (max-width: 1500px) {
