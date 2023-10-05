@@ -42,6 +42,11 @@ class Board {
         }
     }
 
+    deleteBoard() {
+        const boardElement = document.getElementById('board');
+        boardElement.innerHTML = '';
+    }
+
     resetBoard() {
         this.board = [
             ['rook-b', 'knight-b', 'bishop-b', 'queen-b', 'king-b', 'bishop-b', 'knight-b', 'rook-b'],
@@ -303,9 +308,11 @@ class Piece {
         if (type[type.length - 1] === 'b') {
             this.color = 'black';
             this.King = 'king-b';
+            this.reverse = true;
         } else {
             this.color = 'white';
             this.King = 'king-w';
+            this.reverse = false;
         }
 
         this.tile = document.getElementById(tileNum);
@@ -346,8 +353,11 @@ class Piece {
         // Check Mate
         if (this.type === 'king') {
             if (this.piece.checkMate) {
-                endGame(this.color);
-                console.log('died')
+                if (this.color === 'white') {
+                    endGame('black');
+                } else {
+                    endGame('white');
+                }
             }
         }
 
@@ -399,10 +409,21 @@ class Piece {
 
                     const tile = document.getElementById(`${currentTile}-can-move`);
                     if (enPassant) tile.innerText = 'En Passant';
-                    tile.onclick = () => {
-                        this.movePiece(canMoveRow, canMoveCol, enPassant, EPCoords);
+            
+                    // Check if the destination tile is empty or contains an enemy piece
+                    if (this.color === 'white' && (GameBoard.board[row][col] === '' || isBlack(GameBoard.board[row][col], this.reverse))) { // if this pieces move is killing an enemy or moving to an empty spot, its valid
+                        tile.onclick = () => {
+                            this.movePiece(canMoveRow, canMoveCol, enPassant, EPCoords);
+                        }
+                        tile.classList.add('canMove');
                     }
-                    tile.classList.add('canMove');
+
+                    if (this.color === 'black' && (GameBoard.board[row][col] === '' || isBlack(GameBoard.board[row][col], this.reverse))) { // if this pieces move is killing an enemy or moving to an empty spot, its valid
+                        tile.onclick = () => {
+                            this.movePiece(canMoveRow, canMoveCol, enPassant, EPCoords);
+                        }
+                        tile.classList.add('canMove');
+                    }
 
                 }
 
@@ -538,7 +559,7 @@ class King {
         for (const move of kingMoves) {
             if (move.row >= 0 && move.row < 8 && move.col >= 0 && move.col < 8) { // Check if the destination tile is within the range of the board
 
-                if ( ( board[move.row][move.col] === '' || isBlack(board[move.row][move.col], this.reverse) ) && !GameBoard.isCheck(move.row, move.col)) { // If the tile is empty or has an enemy piece and if the tile does NOT put us in check
+                if (!GameBoard.isCheck(move.row, move.col)) { // if the tile does NOT put us in check
                     this.setMove(move.row, move.col);
                 }
 
@@ -621,6 +642,7 @@ class Queen {
                     break; // Stop further movement in this direction
 
                 } else { // The square is occupied by our own piece, so we cannot move beyond it
+                    this.setMove(row, col);
                     break; // Stop further movement in this direction
                 }
 
@@ -709,7 +731,8 @@ class Bishop {
                     this.setMove(row, col);
                     break;
 
-                } else {                      
+                } else {       
+                    this.setMove(row, col);               
                     break; // the destination is occupied (it must be occupied by the same color) move to the next path  
                 }
 
@@ -789,11 +812,8 @@ class Knight {
         for (const move of knightMoves) {
             // Check if the destination tile is within the valid range of the board (0 to 7)
             if (move.row >= 0 && move.row < 8 && move.col >= 0 && move.col < 8) {
-                // Check if the destination tile is empty or contains an enemy piece
-                if (board[move.row][move.col] === '' || isBlack(board[move.row][move.col], this.reverse)) {
-                    this.setMove(move.row, move.col);
-                    if (board[move.row][move.col] === this.enemyKing) possibleInterceptions.push({ row: this.row, col: this.col });
-                }
+                this.setMove(move.row, move.col);
+                if (board[move.row][move.col] === this.enemyKing) possibleInterceptions.push({ row: this.row, col: this.col });
             }
         }
 
@@ -863,6 +883,7 @@ class Rook {
                     break; // Stop further movement in this direction
 
                 } else { // The square is occupied by our own piece, so we can't move past it
+                    this.setMove(row, col);
                     break; // Stop movement in this direction
                 }
 
@@ -1084,25 +1105,6 @@ function startGame(matchTime) {
     closePopup();
 }
 
-function restartGame() {
-    GameBoard.resetBoard();
-
-    clearInterval(timeCheck);
-    whitesTimer.pauseTimer();
-    blacksTimer.pauseTimer();
-
-    whitesTurn = true;
-    movedUp2 = false;
-    start = false;
-
-    enPassantCoords = [];
-    whiteCapturedPieces = [];
-    blackCapturedPieces = [];
-    possibleInterceptions = [];
-
-    GameBoard.Update();
-}
-
 let timeCheck;
 
 function setUpGame() {
@@ -1114,8 +1116,41 @@ function setUpGame() {
 }
 
 function endGame(color) {
-    restartGame();
-    console.log(`${color} Wins!`);
+
+    whitesTimer.pauseTimer();
+    blacksTimer.pauseTimer();
+
+    const endScreen = document.getElementById('end-screen');
+    const winnerMessage = document.getElementById('winner-message');
+    const playAgainButton = document.getElementById('play-again');
+
+    if (color === 'white') {
+        winnerMessage.textContent = `White wins!`;
+    } else if (color === 'black') {
+        winnerMessage.textContent = `Black wins!`;
+    } else {
+        winnerMessage.textContent = "It's a draw!";
+    }
+
+    endScreen.style.display = 'flex';
+
+    playAgainButton.addEventListener('click', () => {
+        clearInterval(timeCheck);
+
+        whitesTurn = true;
+        movedUp2 = false;
+        start = false;
+
+        enPassantCoords = [];
+        whiteCapturedPieces = [];
+        blackCapturedPieces = [];
+        possibleInterceptions = [];
+
+        GameBoard.deleteBoard();
+        endScreen.style.display = 'none';
+        GameBoard.updateMiscellaneous();
+        setUpGame(); // Restart the game when the "Play Again" button is clicked
+    });
 }
 
 function openPopup() {

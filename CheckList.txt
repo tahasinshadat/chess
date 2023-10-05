@@ -86,8 +86,8 @@ CheckList:
     -> [ X ] - Give User options of 10 min (5 mins each), 20 min (10 mins each), and 30 min (15 mins each) games
 [ X ] - Check for a CheckMate / Win
     -> [ X ] - King has no safe spaces to go to and his current space is unsafe / in check
-    -> [  ] - Opponent runs out of time
-[  ] - Display end screen
+    -> [ X ] - Opponent runs out of time
+[ X ] - Display end screen
 
 
 ⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎⚍⚎
